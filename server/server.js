@@ -15,8 +15,21 @@ const PORT = process.env.PORT || 5000;
 // ==============================
 // ✅ CORS CONFIGURATION
 // ==============================
+// Allow Render front-end URL and localhost during development. We read the
+// allowed front-end URL from FRONTEND_URL so you can change it per environment.
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'https://exp8-9-2.onrender.com',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173'
+];
+
 app.use(cors({
-  origin: "https://exp8-9-2.onrender.com", // <-- Your frontend Render URL
+  origin: (origin, callback) => {
+    // allow non-browser requests (Postman, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('CORS policy: This origin is not allowed'));
+  },
   credentials: true
 }));
 
